@@ -1,0 +1,17 @@
+{
+  "name": "solarpunk-last-light",
+  "version": "1.0.0",
+  "description": "SOLARPUNK: LAST LIGHT — 3D Solarpunk Survival-Management Game",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solarpunk Main Menu</title>
+  <style>
+    :root {
+      --gold: #ffd66b;
+      --green: #6ee7a8;
+      --cyan: #7dd3fc;
+      --dark: #0f172a;
+      --glass: rgba(15, 23, 42, 0.48);
+      --glass-strong: rgba(15, 23, 42, 0.72);
+      --white: #f8fafc;
+      --muted: rgba(248, 250, 252, 0.68);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow: hidden;
+      color: var(--white);
+      background: var(--dark);
+      font-family: "Rajdhani", "Orbitron", system-ui, sans-serif;
+      letter-spacing: 0;
+      user-select: none;
+    }
+
+    #main-menu {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 260px minmax(360px, 1fr) 340px;
+      grid-template-rows: 76px 1fr;
+      gap: 24px;
+      background:
+        radial-gradient(circle at 48% 40%, rgba(110, 231, 168, 0.15), transparent 34%),
+        radial-gradient(circle at 82% 16%, rgba(255, 214, 107, 0.16), transparent 28%),
+        linear-gradient(135deg, #0f172a 0%, #07130f 54%, #101827 100%);
+    }
+
+    /* BACKGROUND VIDEO / ANIMATION WILL BE INSERTED HERE */
+
+    #main-menu::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(125, 211, 252, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(125, 211, 252, 0.07) 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: radial-gradient(circle at center, black, transparent 76%);
+    }
+
+    .glass {
+      border: 1px solid rgba(255, 214, 107, 0.18);
+      background: var(--glass);
+      box-shadow: 0 0 30px rgba(110, 231, 168, 0.1), inset 0 0 28px rgba(255, 214, 107, 0.05);
+      backdrop-filter: blur(18px) saturate(135%);
+    }
+
+    #top-hud {
+      position: relative;
+      z-index: 1;
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(190px, 300px) minmax(190px, 300px) 1fr auto;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .hud-meter {
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
+
+    .hud-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .meter-track {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(248, 250, 252, 0.11);
+    }
+
+    .meter-fill {
+      height: 100%;
+      border-radius: inherit;
+    }
+
+    .meter-fill.energy {
+      width: 74%;
+      background: linear-gradient(90deg, #f59e0b, var(--gold));
+      box-shadow: 0 0 16px rgba(255, 214, 107, 0.62);
+    }
+
+    .meter-fill.ecosystem {
+      width: 88%;
+      background: linear-gradient(90deg, #22c55e, var(--green));
+      box-shadow: 0 0 16px rgba(110, 231, 168, 0.62);
+    }
+
+    #credits-display {
+      justify-self: end;
+      min-width: 180px;
+      padding: 14px 18px;
+      border-radius: 8px;
+      text-align: right;
+    }
+
+    .credits-value {
+      display: block;
+      color: var(--gold);
+      font: 800 1.55rem "Orbitron", system-ui, sans-serif;
+      text-shadow: 0 0 18px rgba(255, 214, 107, 0.5);
+    }
+
+    .credits-label {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    #goddess-panel {
+      position: relative;
+      z-index: 1;
+      align-self: center;
+      min-height: 150px;
+      padding: 22px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      color: rgba(248, 250, 252, 0.9);
+      font-size: 1rem;
+      line-height: 1.5;
+      border-color: rgba(110, 231, 168, 0.28);
+      box-shadow: 0 0 32px rgba(110, 231, 168, 0.2), inset 0 0 24px rgba(255, 255, 255, 0.04);
+    }
+
+    #goddess-panel::before {
+      content: "";
+      width: 38px;
+      height: 38px;
+      margin-right: 14px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff, var(--green) 55%, transparent 70%);
+      box-shadow: 0 0 24px rgba(255, 255, 255, 0.55), 0 0 42px rgba(110, 231, 168, 0.55);
+    }
+
+    #map-frame {
+      position: relative;
+      z-index: 1;
+      grid-column: 2;
+      align-self: center;
+      justify-self: center;
+      width: min(100%, 980px);
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: rgba(255, 214, 107, 0.88);
+      font: 800 1.25rem "Orbitron", system-ui, sans-serif;
+      letter-spacing: 0.22em;
+      text-shadow: 0 0 18px rgba(255, 214, 107, 0.62);
+      border: 1px solid rgba(255, 214, 107, 0.44);
+      background:
+        linear-gradient(135deg, rgba(125, 211, 252, 0.08), transparent 46%),
+        rgba(15, 23, 42, 0.38);
+      box-shadow: 0 0 48px rgba(255, 214, 107, 0.18), inset 0 0 60px rgba(110, 231, 168, 0.08);
+      backdrop-filter: blur(16px) saturate(130%);
+    }
+
+    #map-frame::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px solid rgba(125, 211, 252, 0.15);
+      border-radius: 6px;
+      background:
+        linear-gradient(rgba(110, 231, 168, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(110, 231, 168, 0.08) 1px, transparent 1px);
+      background-size: 38px 38px;
+    }
+
+    #mode-panel {
+      position: relative;
+      z-index: 1;
+      grid-column: 3;
+      align-self: center;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 18px;
+      border-radius: 8px;
+    }
+
+    .mode-card {
+      position: relative;
+      height: 230px;
+      overflow: hidden;
+      border: 1px solid rgba(248, 250, 252, 0.14);
+      border-radius: 8px;
+      background: var(--glass-strong);
+      cursor: pointer;
+      transform: translateZ(0);
+      transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+    }
+
+    .mode-card:hover {
+      transform: scale(1.05);
+      border-color: rgba(255, 214, 107, 0.72);
+      box-shadow: 0 0 34px rgba(255, 214, 107, 0.28);
+      filter: brightness(1.16);
+    }
+
+    .mode-card.selected {
+      border-color: var(--gold);
+      box-shadow: 0 0 22px rgba(255, 214, 107, 0.55), 0 0 48px rgba(110, 231, 168, 0.2);
+      animation: selectedPulse 1.9s ease-in-out infinite;
+    }
+
+    @keyframes selectedPulse {
+      0%, 100% { box-shadow: 0 0 22px rgba(255, 214, 107, 0.48), 0 0 48px rgba(110, 231, 168, 0.18); }
+      50% { box-shadow: 0 0 34px rgba(255, 214, 107, 0.72), 0 0 64px rgba(110, 231, 168, 0.28); }
+    }
+
+    .mode-img {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transition: transform 300ms ease;
+    }
+
+    .mode-img.fps {
+      background-image: url("assets/mode-fps.jpeg");
+    }
+
+    .mode-img.tpp {
+      background-image: url("assets/mode-tpp.jpeg");
+    }
+
+    .mode-card:hover .mode-img {
+      transform: scale(1.08);
+    }
+
+    .mode-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 22%, rgba(15, 23, 42, 0.26) 52%, rgba(4, 9, 16, 0.92) 100%);
+    }
+
+    .mode-copy {
+      position: absolute;
+      z-index: 1;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+    }
+
+    .mode-title {
+      display: block;
+      color: var(--white);
+      font: 800 1.35rem "Orbitron", system-ui, sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-shadow: 0 0 16px rgba(125, 211, 252, 0.32);
+    }
+
+    .mode-subtitle {
+      display: block;
+      margin-top: 4px;
+      color: var(--green);
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1040px) {
+      body {
+        overflow: auto;
+      }
+
+      #main-menu {
+        min-height: 100vh;
+        height: auto;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+
+      #top-hud,
+      #goddess-panel,
+      #map-frame,
+      #mode-panel {
+        grid-column: 1;
+      }
+
+      #top-hud {
+        grid-template-columns: 1fr;
+      }
+
+      #credits-display {
+        justify-self: stretch;
+        text-align: left;
+      }
+
+      #mode-panel {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="main-menu">
+    <section id="top-hud">
+      <div class="hud-meter glass">
+        <div class="hud-label">
+          <span>Energy</span>
+          <span>Stable</span>
+        </div>
+        <div class="meter-track">
+          <div class="meter-fill energy"></div>
+        </div>
+      </div>
+
+      <div class="hud-meter glass">
+        <div class="hud-label">
+          <span>Ecosystem</span>
+          <span>Thriving</span>
+        </div>
+        <div class="meter-track">
+          <div class="meter-fill ecosystem"></div>
+        </div>
+      </div>
+
+      <div></div>
+
+      <div id="credits-display" class="glass">
+        <span class="credits-value">12,480</span>
+        <span class="credits-label">Credits</span>
+      </div>
+    </section>
+
+    <aside id="goddess-panel" class="glass">
+      Goddess whispers...
+    </aside>
+
+    <section id="map-frame">
+      <span>MAP PREVIEW</span>
+    </section>
+
+    <aside id="mode-panel" class="glass" aria-label="Mode selection">
+      <button class="mode-card selected" type="button" data-mode="fps" aria-pressed="true">
+        <span class="mode-img fps" aria-hidden="true"></span>
+        <span class="mode-copy">
+          <span class="mode-title">First Person</span>
+          <span class="mode-subtitle">Immersive control</span>
+        </span>
+      </button>
+
+      <button class="mode-card" type="button" data-mode="tpp" aria-pressed="false">
+        <span class="mode-img tpp" aria-hidden="true"></span>
+        <span class="mode-copy">
+          <span class="mode-title">Third Person</span>
+          <span class="mode-subtitle">Strategic control</span>
+        </span>
+      </button>
+    </aside>
+  </main>
+
+  <script>
+    const modeCards = document.querySelectorAll(".mode-card");
+
+    modeCards.forEach((card) => {
+      card.addEventListener("click", () => {
+        modeCards.forEach((item) => {
+          item.classList.remove("selected");
+          item.setAttribute("aria-pressed", "false");
+        });
+
+        card.classList.add("selected");
+        card.setAttribute("aria-pressed", "true");
+      });
+    });
+  </script>
+</body>
+</html>

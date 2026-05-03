@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solarpunk Loading Screen</title>
+  <style>
+    :root {
+      --gold: #f4c95d;
+      --green: #4de38b;
+      --deep: #06100c;
+      --text: #fff5d6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--deep);
+      font-family: "Orbitron", "Rajdhani", system-ui, sans-serif;
+      color: var(--text);
+    }
+
+    #game-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(77, 227, 139, 0.2), transparent 26%),
+        linear-gradient(135deg, #07130e, #102018 48%, #08110d);
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    body.loaded #game-canvas {
+      opacity: 1;
+    }
+
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      overflow: hidden;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 1s ease, visibility 1s ease;
+    }
+
+    #loading-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loading-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(77, 227, 139, 0.18), transparent 31%),
+        linear-gradient(180deg, rgba(4, 8, 6, 0.34), rgba(4, 8, 6, 0.78));
+    }
+
+    .loading-panel {
+      width: min(430px, 86vw);
+      padding: 28px;
+      text-align: center;
+      border: 1px solid rgba(244, 201, 93, 0.28);
+      border-radius: 8px;
+      background: rgba(3, 12, 8, 0.48);
+      box-shadow:
+        0 0 34px rgba(77, 227, 139, 0.18),
+        inset 0 0 28px rgba(244, 201, 93, 0.08);
+    }
+
+    .loading-text {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      text-shadow: 0 0 14px rgba(244, 201, 93, 0.6), 0 0 24px rgba(77, 227, 139, 0.35);
+    }
+
+    .progress-track {
+      height: 8px;
+      margin-top: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(244, 201, 93, 0.28);
+      border-radius: 999px;
+      background: rgba(255, 245, 214, 0.12);
+      box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.5);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green), var(--gold));
+      box-shadow: 0 0 18px rgba(77, 227, 139, 0.75), 0 0 28px rgba(244, 201, 93, 0.42);
+      transition: width 0.25s linear;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <video class="loading-video" src="loading.mp4" autoplay muted loop playsinline preload="metadata"></video>
+    <div class="loading-overlay">
+      <div class="loading-panel">
+        <p class="loading-text">Initializing Dome...</p>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="game-canvas"></canvas>
+
+  <script>
+    const loadingScreen = document.getElementById("loading-screen");
+    const progressFill = document.getElementById("progress-fill");
+    const video = document.querySelector(".loading-video");
+    const canvas = document.getElementById("game-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth * window.devicePixelRatio;
+      canvas.height = window.innerHeight * window.devicePixelRatio;
+      ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+      drawCanvas();
+    }
+
+    function drawCanvas() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "#09120d";
+      ctx.fillRect(0, 0, width, height);
+      ctx.strokeStyle = "rgba(244, 201, 93, 0.65)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2, Math.min(width, height) * 0.28, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(77, 227, 139, 0.8)";
+      ctx.font = "600 18px system-ui";
+      ctx.textAlign = "center";
+      ctx.fillText("Main game canvas revealed", width / 2, height / 2);
+    }
+
+    let progress = 0;
+    const duration = 4200;
+    const startedAt = performance.now();
+
+    function animateLoading(now) {
+      const elapsed = now - startedAt;
+      progress = Math.min(100, (elapsed / duration) * 100);
+      progressFill.style.width = `${progress}%`;
+
+      if (progress < 100) {
+        requestAnimationFrame(animateLoading);
+        return;
+      }
+
+      document.body.classList.add("loaded");
+      loadingScreen.classList.add("fade-out");
+      setTimeout(() => {
+        loadingScreen.remove();
+        video.pause();
+      }, 1000);
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    requestAnimationFrame(animateLoading);
+  </script>
+</body>
+</html>

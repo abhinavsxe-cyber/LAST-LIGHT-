@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SOLARPUNK: LAST LIGHT — Balance energy, ecosystem, and economy in the last dome city on Earth." />
+  <title>SOLARPUNK: LAST LIGHT</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/node_modules/three/build/three.module.js",
+        "three/": "/node_modules/three/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- LOADING SCREEN -->
+  <div id="loading-screen">
+    <video
+      id="loading-video"
+      class="loading-video"
+      src="loading.mp4"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      aria-hidden="true"
+    ></video>
+    <div class="loading-overlay">
+      <div class="loading-content">
+        <p class="loading-text" id="loading-text">Initializing Dome...</p>
+        <div class="loading-bar-container">
+          <div class="loading-bar" id="loading-bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRO CUTSCENE -->
+  <div id="intro-screen" class="hidden">
+    <video
+      id="intro-video"
+      class="intro-video"
+      src="assets/intro/game-intro.mp4"
+      playsinline
+      preload="auto"
+    ></video>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="start-screen" class="hidden">
+    <main id="main-menu">
+      <!-- BACKGROUND VIDEO / ANIMATION WILL BE INSERTED HERE -->
+      <video
+        id="main-menu-video"
+        src="assets/main-menu-bg.mp4"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-hidden="true"
+      ></video>
+      <audio
+        id="main-menu-audio"
+        src="assets/main-menu-audio.mpeg"
+        loop
+        preload="auto"
+      ></audio>
+
+      <section id="menu-top-hud">
+        <div class="menu-meter menu-glass">
+          <div class="menu-meter-label">
+            <span>Energy</span>
+            <span>Stable</span>
+          </div>
+          <div class="menu-meter-track">
+            <div class="menu-meter-fill energy"></div>
+          </div>
+        </div>
+
+        <div class="menu-meter menu-glass">
+          <div class="menu-meter-label">
+            <span>Ecosystem</span>
+            <span>Thriving</span>
+          </div>
+          <div class="menu-meter-track">
+            <div class="menu-meter-fill ecosystem"></div>
+          </div>
+        </div>
+
+        <div id="menu-credits" class="menu-glass">
+          <span class="menu-credits-value">12,480</span>
+          <span class="menu-credits-label">Credits</span>
+        </div>
+      </section>
+
+      <aside id="goddess-panel" class="menu-glass">
+        Goddess whispers...
+      </aside>
+
+      <section id="map-frame">
+        <span>LIVE BASE PREVIEW</span>
+      </section>
+
+      <aside id="mode-panel" class="menu-glass" aria-label="Mode selection">
+        <button class="mode-card selected" type="button" data-mode="fps" aria-pressed="true">
+          <span class="mode-img fps" aria-hidden="true"></span>
+          <span class="mode-copy">
+            <span class="mode-title">First Person</span>
+            <span class="mode-subtitle">Immersive control</span>
+          </span>
+        </button>
+
+        <button class="mode-card" type="button" data-mode="tpp" aria-pressed="false">
+          <span class="mode-img tpp" aria-hidden="true"></span>
+          <span class="mode-copy">
+            <span class="mode-title">Third Person</span>
+            <span class="mode-subtitle">Strategic control</span>
+          </span>
+        </button>
+
+        <button id="start-btn" class="glow-btn">BEGIN</button>
+      </aside>
+    </main>
+  </div>
+
+  <!-- GAME CANVAS -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <!-- Top bars -->
+    <div id="hud-top">
+      <div class="hud-bar-group">
+        <div class="hud-bar-label">
+          <span class="bar-icon">⚡</span>
+          <span>ENERGY</span>
+          <span class="bar-value" id="energy-value">100</span>
+        </div>
+        <div class="hud-bar">
+          <div class="hud-bar-fill energy-fill" id="energy-bar"></div>
+        </div>
+      </div>
+      <div class="hud-bar-group">
+        <div class="hud-bar-label">
+          <span class="bar-icon">🌿</span>
+          <span>ECOSYSTEM</span>
+          <span class="bar-value" id="ecosystem-value">100</span>
+        </div>
+        <div class="hud-bar">
+          <div class="hud-bar-fill ecosystem-fill" id="ecosystem-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Credits -->
+    <div id="hud-credits">
+      <span class="credits-icon">💰</span>
+      <span class="credits-amount" id="credits-value">0</span>
+      <span class="credits-label">CREDITS</span>
+    </div>
+
+    <!-- Wave info -->
+    <div id="hud-wave" class="hidden">
+      <span class="wave-label">⚔️ WAVE</span>
+      <span class="wave-number" id="wave-value">1</span>
+    </div>
+
+    <!-- Day night cycle -->
+    <div id="day-night-indicator">
+      <span class="cycle-label" id="cycle-label">DAY</span>
+      <div class="cycle-track">
+        <div class="cycle-fill" id="cycle-fill"></div>
+      </div>
+      <span class="cycle-hint" id="cycle-hint">Raiders attack at night</span>
+    </div>
+
+    <!-- Build menu -->
+    <div id="build-menu">
+      <div class="build-item" data-build="powerplant" id="build-powerplant">
+        <div class="build-icon">⚡</div>
+        <div class="build-name">Power Plant</div>
+        <div class="build-cost">50 CR</div>
+        <kbd>1</kbd>
+      </div>
+      <div class="build-item" data-build="mech" id="build-mech">
+        <div class="build-icon">🤖</div>
+        <div class="build-name">Defense Mech</div>
+        <div class="build-cost">75 CR</div>
+        <kbd>2</kbd>
+      </div>
+      <div class="build-item" data-build="healzone" id="build-healzone">
+        <div class="build-icon">🌱</div>
+        <div class="build-name">Heal Trees</div>
+        <div class="build-cost">FREE</div>
+        <kbd>3</kbd>
+      </div>
+    </div>
+
+    <!-- Interaction prompt -->
+    <div id="interact-prompt" class="hidden">
+      <span>Press <kbd>E</kbd> to interact</span>
+    </div>
+
+    <!-- Mode indicator -->
+    <div id="mode-indicator">
+      <span id="mode-text">RPG MODE</span>
+    </div>
+
+    <!-- Minimap -->
+    <canvas id="minimap" width="160" height="160"></canvas>
+
+    <!-- Goddess message -->
+    <div id="goddess-message" class="hidden">
+      <div class="goddess-glow"></div>
+      <p id="goddess-text"></p>
+    </div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="game-over" class="hidden">
+    <div class="gameover-content">
+      <h1 class="gameover-title">DOME COLLAPSED</h1>
+      <p class="gameover-reason" id="gameover-reason">Energy depleted. The last light has faded.</p>
+      <div class="gameover-stats">
+        <div class="stat"><span class="stat-label">Waves Survived</span><span class="stat-value" id="stat-waves">0</span></div>
+        <div class="stat"><span class="stat-label">Credits Earned</span><span class="stat-value" id="stat-credits">0</span></div>
+        <div class="stat"><span class="stat-label">Trees Healed</span><span class="stat-value" id="stat-trees">0</span></div>
+        <div class="stat"><span class="stat-label">Enemies Defeated</span><span class="stat-value" id="stat-enemies">0</span></div>
+      </div>
+      <button id="restart-btn" class="glow-btn">TRY AGAIN</button>
+    </div>
+  </div>
+
+  <!-- Crosshair for FPS -->
+  <div id="crosshair" class="hidden">+</div>
+
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>
